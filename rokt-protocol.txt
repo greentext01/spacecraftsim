@@ -1,0 +1,8 @@
+Commands always start with a 4 byte header specifying how long it is (in bytes).
+
+Client commands:
+>rotate <number>
+
+Server communication:
+>altitude <altitude>
+>error <message>

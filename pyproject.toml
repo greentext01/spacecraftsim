@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "spacecraftsim"
+version = "0.1.0"
+description = "Simulates a spaceship mission"
+authors = ["Olivier Audet-Yang <oaudetyang@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+pylint = "2.15.3"
+pdoc = "^12.2.0"
+black = "^22.8.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
