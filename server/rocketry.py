@@ -6,7 +6,7 @@ import struct
 from abc import ABC, abstractmethod
 from time import time
 
-from spacecraftsim.config import config
+from server.config import config
 
 
 class BaseRocket(ABC):

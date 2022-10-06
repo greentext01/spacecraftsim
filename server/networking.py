@@ -2,9 +2,9 @@
 
 import socket
 import threading
-from spacecraftsim.commands import Command
+from server.commands import Command
 
-from spacecraftsim.config import config
+from server.config import config
 
 
 class Clients:

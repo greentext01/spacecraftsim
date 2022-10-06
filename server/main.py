@@ -4,8 +4,8 @@ The server
 
 import threading
 
-from spacecraftsim.networking import Server
-from spacecraftsim.rocketry import BaseRocket, Rocket
+from server.networking import Server
+from server.rocketry import BaseRocket, Rocket
 
 HOST = "127.0.0.1"
 PORT = 5000

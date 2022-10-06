@@ -4,7 +4,7 @@ Classes for Rokt commands
 from abc import ABC, abstractmethod
 from typing import Type
 
-from spacecraftsim.rocketry import BaseRocket
+from server.rocketry import BaseRocket
 
 
 class BaseCommand(ABC):
