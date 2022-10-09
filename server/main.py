@@ -2,6 +2,7 @@
 The server
 """
 
+from collections import deque
 import threading
 
 from server.networking import Server
@@ -15,8 +16,8 @@ GRAVITY = 9.807
 class Runner:
     """Runs a entire rocket."""
 
-    def __init__(self, rocket: BaseRocket):
-        self.server = Server(rocket)
+    def __init__(self, rocket: BaseRocket, server: Server):
+        self.server = server
         self.rocket = rocket.set_server(self.server)
 
         self.rocket_thread = threading.Thread(target=self.rocket.launch)
@@ -24,15 +25,20 @@ class Runner:
 
     def start(self):
         """Starts the rocket and server."""
+        self.server.start_server()
         self.srv_thread.start()
         self.rocket_thread.start()
 
 
 def main():
     """The main function."""
-    rocket = Rocket().set_engine_power(10).set_fuel_s(10).set_mass(1)
+    inbound_mq = deque()
+    outbound_mq = deque()
 
-    Runner(rocket).start()
+    rocket = Rocket(inbound_mq, outbound_mq).set_engine_power(10).set_fuel_s(10).set_mass(1)
+    server = Server(inbound_mq, outbound_mq)
+
+    Runner(rocket, server).start()
 
 
 if __name__ == "__main__":

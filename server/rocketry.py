@@ -2,11 +2,16 @@
 All the rocket classes.
 """
 
+from collections import deque
 import struct
 from abc import ABC, abstractmethod
-from time import time
+from time import sleep, time
+from typing import TYPE_CHECKING
 
 from server.config import config
+
+if TYPE_CHECKING:
+    from server.commands import BaseCommand
 
 
 class BaseRocket(ABC):
@@ -14,20 +19,20 @@ class BaseRocket(ABC):
     The base class for every rocket. Holds common variables
     """
 
-    def __init__(self):
+    def __init__(self, m_queue_in: deque["BaseCommand"], m_queue_out: deque):
         self.mass_kg = None
         self.fuel_s = None
         self.engine_power_newt = None
         self.server = None
         self.speed_m_s = 0
         self.altitude_m = 0
-        self.altitudes = []
         self.flight_start = 0
         self.time_passed = 0
-        self.times = []
         self.deltatime = 0
         self.throttle = 0
         self.flown = False
+        self.m_queue_in = m_queue_in
+        self.m_queue_out = m_queue_out
 
     def set_mass(self, val):
         """
@@ -61,12 +66,7 @@ class BaseRocket(ABC):
         """A wrapper for `fly_next`. Measures the deltatime, then calls the method."""
         self.deltatime = self.measure_deltatime()
         self.time_passed += self.deltatime
-        self.times.append(self.time_passed)
         self._fly_next()
-
-    @abstractmethod
-    def _fly_next(self):
-        pass
 
     def set_server(self, server):
         """
@@ -85,22 +85,14 @@ class BaseRocket(ABC):
                 self.server.broadcast(struct.pack("f", self.altitude_m))
                 print(self.altitude_m)
                 last_emitted = self.time_passed
+
             self.fly()
-
-
-class InstantRocket(BaseRocket):
-    """
-    A rocket where deltatime is always 1.
-    Speeds up running the rocket for development purposes
-    """
-
-    def measure_deltatime(self):
-        return 1
+            sleep(0.2)
 
     def _fly_next(self):
         force = 0
         if self.fuel_s > 0:
-            self.fuel_s -= self.deltatime
+            self.fuel_s -= self.deltatime * self.throttle
             force += self.engine_power_newt * self.throttle
 
         force -= config.get("gravity", 9.807) * self.mass_kg
@@ -112,13 +104,24 @@ class InstantRocket(BaseRocket):
 
         self.speed_m_s += acceleration_ms2 * self.deltatime
 
-        if self.altitude_m + self.speed_m_s > 0:
-            self.altitude_m += self.speed_m_s
-            self.flown = True
-        else:
-            self.altitude_m = 0
+        # Cap the speed, so that it doesn't go through the ground.
+        self.speed_m_s = max(-self.altitude_m, self.speed_m_s)
 
-        self.altitudes.append(self.altitude_m)
+        self.altitude_m += self.speed_m_s
+
+        for i, command in enumerate(self.m_queue_in):
+            del self.m_queue_in[i]
+            command.execute(self)
+
+
+class InstantRocket(BaseRocket):
+    """
+    A rocket where deltatime is always 1.
+    Speeds up running the rocket for development purposes
+    """
+
+    def measure_deltatime(self):
+        return 1
 
 
 class Rocket(InstantRocket):
@@ -126,8 +129,8 @@ class Rocket(InstantRocket):
     A rocket with real deltatime.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, m_queue_in: deque, m_queue_out: deque):
+        super().__init__(m_queue_in, m_queue_out)
         self.prev_time = time()
 
     def measure_deltatime(self):
