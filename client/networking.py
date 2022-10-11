@@ -30,7 +30,7 @@ class Client:
             for size in divide_size(data_size, 1024):
                 data = self.sock.recv(size)
                 message += data.decode("utf-8")
-                print(data.decode("utf-8"))
+                self.message_queue.append(data.decode("utf-8"))
 
             self.message_queue.appendleft(message)
 

@@ -82,8 +82,7 @@ class BaseRocket(ABC):
         last_emitted = 0
         while self.altitude_m >= 0 or self.flown:
             if last_emitted < self.time_passed - 0.5:
-                self.server.broadcast(struct.pack("f", self.altitude_m))
-                print(self.altitude_m)
+                self.server.broadcast(str(self.altitude_m))
                 last_emitted = self.time_passed
 
             self.fly()
@@ -108,7 +107,6 @@ class BaseRocket(ABC):
         self.speed_m_s = max(-self.altitude_m, self.speed_m_s)
 
         self.altitude_m += self.speed_m_s
-        self.m_queue_out.appendleft(self.altitude_m)
 
         for command in self.m_queue_in:
             command.execute(self)
