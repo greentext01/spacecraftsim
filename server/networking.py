@@ -50,27 +50,29 @@ class Server:
         while True:
             conn, _ = self.sock.accept()
 
+            self.clients.add_client(conn)
+
             listen_thread = threading.Thread(
                 target=self.listen, args=(conn,), name=str(conn.getpeername())
             )
             listen_thread.start()
 
-    def send(self, message: str):
-        """Send a message to the server."""
+    def send(self, message: str | bytes, sock: socket.socket, client_index: int):
+        """Send a message to a client."""
         try:
-            self.sock.sendall(len(message).to_bytes(3, "big"))
-            self.sock.sendall(message.encode("utf-8"))
+            sock.sendall(len(message).to_bytes(3, "big"))
+            if isinstance(message, bytes):
+                sock.sendall(message)
+            else:
+                sock.sendall(message.encode("utf-8"))
         except socket.error:
-            pass
+            self.clients.del_client(client_index)
 
     def broadcast(self, message):
         """Sends a message to all clients."""
         with self.clients.clients_lock:
             for i, conn in enumerate(self.clients.clients):
-                try:
-                    conn.sendall(message)
-                except socket.error:
-                    self.clients.del_client(i)
+                self.send(message, conn, i)
 
     def listen(self, conn: socket.socket):
         """Listens to communications from a client."""

@@ -32,11 +32,16 @@ class Runner:
 
 def main():
     """The main function."""
-    inbound_mq = deque()
-    outbound_mq = deque()
+    rocket_to_server_mq = deque()
+    server_to_rocket_mq = deque()
 
-    rocket = Rocket(inbound_mq, outbound_mq).set_engine_power(10).set_fuel_s(10).set_mass(1)
-    server = Server(inbound_mq, outbound_mq)
+    rocket = (
+        Rocket(server_to_rocket_mq, rocket_to_server_mq)
+        .set_engine_power(10)
+        .set_fuel_s(10)
+        .set_mass(1)
+    )
+    server = Server(rocket_to_server_mq, server_to_rocket_mq)
 
     Runner(rocket, server).start()
 

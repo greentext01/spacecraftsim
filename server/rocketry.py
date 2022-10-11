@@ -108,10 +108,12 @@ class BaseRocket(ABC):
         self.speed_m_s = max(-self.altitude_m, self.speed_m_s)
 
         self.altitude_m += self.speed_m_s
+        self.m_queue_out.appendleft(self.altitude_m)
 
-        for i, command in enumerate(self.m_queue_in):
-            del self.m_queue_in[i]
+        for command in self.m_queue_in:
             command.execute(self)
+
+        self.m_queue_in.clear()
 
 
 class InstantRocket(BaseRocket):

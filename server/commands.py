@@ -2,7 +2,6 @@
 Classes for Rokt commands
 """
 from abc import ABC, abstractmethod
-from collections import deque
 from typing import Type
 
 from server.rocketry import BaseRocket
@@ -11,8 +10,7 @@ from server.rocketry import BaseRocket
 class BaseCommand(ABC):
     """Represents a rokt command"""
 
-    def __init__(self, rocket: BaseRocket, command: str, args: list[str]) -> None:
-        self.rocket = rocket
+    def __init__(self, command: str, args: list[str]) -> None:
         self.command = command
         self.args = args
 
@@ -37,6 +35,7 @@ class EngineCommand(BaseCommand):
 
 class Command:
     """Factory for commands"""
+
     def __init__(self, command, args):
         try:
             command_mapping: dict[str, Type[BaseCommand]] = {
@@ -51,5 +50,5 @@ class Command:
         """Runs that command"""
         if hasattr(self, "command") and self.command:
             return self.command.execute(rocket)
-        else:
-            return "Invalid command"
+
+        return "Invalid command"

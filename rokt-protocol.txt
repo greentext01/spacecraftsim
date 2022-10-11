@@ -1,5 +1,3 @@
-Commands always start with a 4 byte big-endian header specifying how long it is (in bytes).
-
 Client commands:
 >rotate <number>
 
