@@ -1,10 +1,10 @@
 """Implements the networking part of the server."""
 
-from collections import deque
 import socket
 import threading
-from server.commands import Command
+from collections import deque
 
+from server.commands import Command
 from server.config import config
 
 
