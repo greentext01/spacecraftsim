@@ -23,5 +23,5 @@ def divide_size(size, chunk_size):
             100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 34
     """
     while size > 0:
-        size -= min(size, chunk_size)
         yield min(size, chunk_size)
+        size -= min(size, chunk_size)

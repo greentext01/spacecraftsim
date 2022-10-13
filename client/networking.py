@@ -25,7 +25,9 @@ class Client:
     def client_thread(self):
         """Handles the networking part."""
         while True:
-            data_size = int.from_bytes(self.sock.recv(3), "big")
+            size_bytes = self.sock.recv(4)
+
+            data_size = int.from_bytes(size_bytes, "big")
             message = ""
             for size in divide_size(data_size, 1024):
                 data = self.sock.recv(size)
@@ -40,8 +42,9 @@ class Client:
     def send(self, message: str):
         """Send a message to the server"""
         try:
-            self.sock.sendall(len(message).to_bytes(3, "big"))
-            self.sock.sendall(message.encode("utf-8"))
+            encoded = message.encode("utf-8")
+            self.sock.sendall(len(encoded).to_bytes(4, "big"))
+            self.sock.sendall(encoded)
         except socket.error:
             self.message_queue.appendleft("Trying to reconnect...")
 
