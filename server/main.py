@@ -38,7 +38,7 @@ def main():
     rocket = (
         Rocket(server_to_rocket_mq, rocket_to_server_mq)
         .set_engine_power(10)
-        .set_fuel_s(10)
+        .set_fuel_s(1000)
         .set_mass(1)
     )
     server = Server(rocket_to_server_mq, server_to_rocket_mq)

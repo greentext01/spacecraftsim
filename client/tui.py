@@ -3,7 +3,7 @@
 from collections import deque
 from textual.app import App
 from textual.reactive import Reactive
-from textual.widgets import Static
+from textual.widgets import ScrollView
 from client.networking import Client
 
 from client.widgets import Input
@@ -29,10 +29,11 @@ class Frontend(App):
         Returns:
             content, after being cut.
         """
-        self.content += string + "\n"
-        self.content = self.content[:1000]
+        self.content += f"\n{self.body.y}; {self.body.max_scroll_y}"
+        self.content = self.content[-1000:]
         await self.body.update(self.content)
-
+        if self.body.y >= self.body.max_scroll_y - 10:
+            self.body.y = self.body.max_scroll_y
 
     async def on_load(self):
         """On load"""
@@ -43,7 +44,7 @@ class Frontend(App):
     async def on_mount(self):
         """On mount"""
         self.input = Input()
-        self.body = Static("")
+        self.body = ScrollView("")
 
         await self.view.dock(self.input, edge="bottom", size=1)
         await self.view.dock(self.body, edge="top")

@@ -59,6 +59,7 @@ class Server:
 
     def send(self, message: str | bytes, sock: socket.socket, client_index: int):
         """Send a message to a client."""
+        print(message)
         try:
             if isinstance(message, bytes):
                 sock.sendall(len(message))
