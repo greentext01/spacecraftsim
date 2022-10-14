@@ -37,7 +37,7 @@ class Client:
 
     def start_client(self):
         """Start a new thread that recieves messages"""
-        Thread(target=self.client_thread).start()
+        Thread(target=self.client_thread, daemon=True).start()
 
     def send(self, message: str):
         """Send a message to the server"""

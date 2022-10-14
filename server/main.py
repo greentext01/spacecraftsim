@@ -4,6 +4,7 @@ The server
 
 from collections import deque
 import threading
+from time import sleep
 
 from server.networking import Server
 from server.rocketry import BaseRocket, Rocket
@@ -20,8 +21,8 @@ class Runner:
         self.server = server
         self.rocket = rocket.set_server(self.server)
 
-        self.rocket_thread = threading.Thread(target=self.rocket.launch)
-        self.srv_thread = threading.Thread(target=self.server.run_server)
+        self.rocket_thread = threading.Thread(target=self.rocket.launch, daemon=True)
+        self.srv_thread = threading.Thread(target=self.server.run_server, daemon=True)
 
     def start(self):
         """Starts the rocket and server."""
@@ -48,3 +49,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    while True:
+        sleep(1)

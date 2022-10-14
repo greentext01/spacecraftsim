@@ -29,6 +29,7 @@ class Input(Widget):
             self.cursor_pos += 1
         elif event.key == "enter":
             await self.emit(SendCommand(self, self.content))
+            self.content = ""
         elif event.key == "end":
             self.cursor_pos = len(self.content)
         elif event.key == "home":

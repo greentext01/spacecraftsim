@@ -53,7 +53,7 @@ class Server:
             self.clients.add_client(conn)
 
             listen_thread = threading.Thread(
-                target=self.listen, args=(conn,), name=str(conn.getpeername())
+                target=self.listen, args=(conn,), name=str(conn.getpeername()), daemon=True
             )
             listen_thread.start()
 

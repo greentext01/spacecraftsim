@@ -82,7 +82,7 @@ class BaseRocket(ABC):
         last_emitted = 0
         while self.altitude_m >= 0 or self.flown:
             if last_emitted < self.time_passed - 0.5:
-                self.server.broadcast(str(self.altitude_m))
+                self.server.broadcast(f"altitude {self.altitude_m}")
                 last_emitted = self.time_passed
 
             self.fly()

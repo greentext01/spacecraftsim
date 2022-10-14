@@ -1,6 +1,7 @@
 """The client's user interface."""
 
 from collections import deque
+import sys
 from textual.app import App
 from textual.reactive import Reactive
 from textual.widgets import ScrollView
@@ -29,11 +30,10 @@ class Frontend(App):
         Returns:
             content, after being cut.
         """
-        self.content += f"\n{self.body.y}; {self.body.max_scroll_y}"
+        self.content += f"\n{string}"
         self.content = self.content[-1000:]
         await self.body.update(self.content)
-        if self.body.y >= self.body.max_scroll_y - 10:
-            self.body.y = self.body.max_scroll_y
+        self.body.y = self.body.max_scroll_y
 
     async def on_load(self):
         """On load"""
@@ -49,6 +49,8 @@ class Frontend(App):
         await self.view.dock(self.input, edge="bottom", size=1)
         await self.view.dock(self.body, edge="top")
 
+        await self.input.focus()
+
         self.set_interval(0.1, self.print_messages)
 
     async def print_messages(self):
@@ -59,4 +61,8 @@ class Frontend(App):
 
     async def handle_send_command(self, event: SendCommand):
         """When the user sends a command."""
+        split = event.content.split(" ")
+        if split and split[0] == "exit":
+            sys.exit(split[1] if len(split) >= 2 else 0)
+
         self.client.send(event.content)
